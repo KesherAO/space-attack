@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b16" />
+    <title>Space Attack</title>
+  </head>
+  <body>
+    <main id="app" aria-label="Space Attack game">
+      <div id="game-frame">
+        <div id="game-hud">
+          <section id="score-display" aria-label="Scores">
+            <div class="score-block">
+              <span class="score-label">HIGHSCORE</span>
+              <output id="high-score" aria-label="High score">0000000</output>
+            </div>
+            <div class="score-block">
+              <span class="score-label">SCORE</span>
+              <output id="current-score" aria-label="Current score" aria-live="polite">0000000</output>
+            </div>
+          </section>
+          <section id="wave-status" aria-label="Wave timer and current wave">
+            <div id="wave-time-track" role="meter" aria-label="Wave time remaining" aria-valuemin="0" aria-valuemax="60" aria-valuenow="60">
+              <div id="wave-time-fill"></div>
+            </div>
+            <span id="energy-marker" aria-hidden="true">E</span>
+            <span id="wave-number">WAVE 0</span>
+          </section>
+          <div id="life-display" aria-live="polite" aria-label="Spare lives"></div>
+          <section id="title-screen" aria-label="Space Attack title screen">
+            <div class="title-lockup">
+              <h1>SPACE ATTACK</h1>
+              <p class="title-prompt">
+                <span>PRESS</span>
+                <kbd aria-label="Enter key">ENTER</kbd>
+                <span>TO START</span>
+              </p>
+            </div>
+          </section>
+          <section id="tutorial-panel" hidden aria-live="polite" aria-label="Game controls">
+            <p>PRESS <kbd>SPACEBAR</kbd> TO ATTACK</p>
+            <p>
+              <span class="arrow-keys" aria-label="Left and right arrow keys">
+                <kbd aria-label="Left arrow">←</kbd><kbd aria-label="Right arrow">→</kbd>
+              </span>
+              <span>TO MOVE</span>
+            </p>
+          </section>
+          <section id="game-over" hidden aria-live="assertive">
+            <h1>GAME OVER</h1>
+            <p id="restart-prompt" hidden>
+              <span>PRESS</span>
+              <kbd aria-label="Enter key">ENTER</kbd>
+              <span>TO RESTART</span>
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
