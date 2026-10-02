@@ -1,0 +1,186 @@
+- We will create together a small, polished browser arcade game in this empty project folder
+- We have to finish this project in 1h 30 min
+- We work in small steps, implementing small chunks at a time
+- To save time, each new graphical element we add will start at a "production" level, we skip the placeholder stage, but we can further iterate. I will try to describe everything in detail from the start
+- Do not implement anything before asking me for a final confirmation in the form "I will now do x & y, do you confirm?" Only after I confirm, we move forward
+- If something is not clear in my prompts, ask for clarifications first, do not assume
+
+All clear so far?
+
+Overview
+- we're building a 2D browser Arcade game, where the player pilots a spaceship against waves of enemies 
+- Use Space Attack from 1982, played on Emerson Arcadia 2001 console, as a reference for the mechanics of the game we're making
+- Graphics style: Neo-Retro Pixel Art - think of Sea of Stars, but in a 2D environment - so we bring the old graphics to modern standards - more colorful, more detailed animations, cooler FXs
+- Sound FXs - matching the retro vibe
+
+
+Overview
+- we're building a 2D browser Arcade game, where the player pilots a spaceship against waves of enemies
+- Use Space Attack from 1982, played on Emerson Arcadia 2001 console, as a reference for the mechanics of the game we're making
+- Graphics style: Neo-Retro Pixel Art - think of Sea of Stars, but in a 2D environment - so we bring the old graphics to modern standards - more colorful, more detailed animations, cooler FXs
+- Sound FXs - matching the retro vibe
+
+First step
+- base aspect ratio 16:9
+- playable area - a vertical corridor, using only 50% of the screen, between 25% and 75% of the screen on x axys
+
+
+
+
+Next - Ship movement
+- at the bottom of the playable area, with a 2% screen off-set on y, there's the player's spaceship
+  - visuals: we're on the good side, so make it reminiscent of an X Wing from star wars, but not too close. More rectangular shape. We will use more curved shapes for the enemies, to differentiate them; the ship has a visible cannon in front, centered
+  - controls:
+    - the ship can move only on x axys, using arrow keys on keyboard
+    - on y, the ship is at the bottom, with a small offset of 2% of the screen upwards
+    - the ship moves slightly at any arrow tap - to be tuned
+    - holding the arrow keys moves the ship continuously; it takes the ship 2.5 sec to move from one side of the screen to another
+    - the ship has collision with enemies and enemy projectiles
+Let's tune this first
+
+
+
+Next - Shooting
+- each time the player taps the space bar, the ship shoots 1 projectile. The projectile looks like a photon torpedo (clear head, with a small tail/trail) and has a tunable width; make it for now as wide as the barrel
+- if the player holds space bar, the ship shoots continuously, at an interval of 1 projectile every 0.5 sec
+- if the player spam taps, the minimum interval between shots is 0.2 sec
+- visual: shooting, makes the cannon barrel have a small recoil
+
+HE ASKED ABOUT THE TORPEDO SPEED, GOOD CATCH
+
+
+Next - General parameters
+- the player has 3 lives
+- each time the ship collides with an enemy projectile or an enemy ship, the player ship blows up
+  - make an explosion animation with fire and chunks of debris
+  - randomize the dispersion of the debris and the shape/size of the explosion, so that the player sees slightly different animations each time
+  - when the player ship explodes, the player loses 1 life
+- player's lives are visible on screen, on the left side of the screen, centered between 0-25% - so we use the left non-playable area to display the lives
+- each life is represented by the icon of the player's ship - so a representation, same shape, less detail, a single color with pixels of gradient of the same color - keep it simple, but in the new-retro style
+- when the ship is hit, the following sequence takes place:
+  - ship starts exploding animation
+  - the ship icon most to the right blinks for 3 sec, then disappears and is substracted
+  - the explosion/death animation ends
+  - the player ship reappears with a very fast blink, lasting for 1 sec
+- when the player runs out of lives (1 starting - the ship we see + 2 displayed on the left), the game is lost
+  - GAME OVER text appears mid screen, big
+    - below, with a delay, the following text blinks, with a pulsing animation. text reads: "PRESS [ENTER KEY] TO RESTART"; use enter key icon in the same style
+    - when player presses enter, the game restarts with 1 + 2 lives
+    - give me a debug key to test this sequence
+
+
+
+Next - enemies
+- enemies come in waves
+- each wave contains 3 types of enemies, differentiated visually
+  - A - curvy shape, aggressive, pointy look, reddish tint (clear chromatic tone)
+  - B - chunky shaped - greenish tint
+  - C - spiky/star shaped, yellowish
+- all enemies have the same size and can be enclosed in a square of the same size, with the exception of type C, which are 50% bigger
+- enemies have collision only with the player's projectiles and player's ship, nothing else - e.g. not their projectiles or between them
+- A & B take 1 projectile to be destroyed, while C takes 2 projectiles to die
+  - make the explosion animation quick and small, to not interfere with the gameplay
+- enemies are arranged in the same formation, at the beginning of each wave:
+  - 3 rows x 9 type A each in front of the formation, facing the player's side
+  - followed by a 4th row of 7 type B
+  - followed by a 5th row of 5 type A
+  - followed by a 6th final row of 2 type C
+- At the beginning of each wave, this formation appears at the top of the screen, centered, with the type C at the top of the playable area
+Let's implement the formation and them being destroyed, before moving to their behavior
+
+Feedback on icons:
+- move them lower down, closer to the bottom, at 30% of y
+- give them the same shape as the player ship - they now show a different shape; color is good
+Yes, they appear with a fade in of 2 sec, in the same formation and only after the fade is completed, they become killable again and a new wave starts.
+
+Next - wave movement
+- each wave, the formation follows at certain movement pattern
+- they all move starting center, in formation, from left to right. Each new wave they start from center, moving in random direction - left or right
+- the formation moves left/right to only 80% of the playable area on x, so it's invisible movement borders are at 10 - 80 - 10 of the playable corridor
+- the movement is done in "steps", tac-tac-tac... from wall to wall;
+- Important:
+  - this step frequency is a ramping of difficulty variable
+  - wave 1 starts at 1 sec, but with each new wave, the time between steps decreases with 0.05 sec, capping at a minimum of 0.2 sec for wave x
+- when a live enemy inside the formation touches either side limit / left or right, it goes down 1 unit - a unit = the size of 1 square that an enemy takes up
+Let's make this lateral movement first, while I shoot and give feedback
+
+
+Formation feedback
+- reduce the space between enemies inside the formation
+  - a bit closer on x
+  - then use the same distance to approach them on y
+- Movement step - 1/2 units
+- Randomly
+
+1. the downward movement of the attacker is much faster than the formation, let's try 5 units per sec, I need to check how it feels. Use an angle of 70 degrees for the zig zag
+2. first criteria is rows 1 and 2 are last, rest is random
+3. yes, we need to speed this up
+
+
+Next - general flow
+
+- player accesses the playable link
+- splash screen title - modernized capcom style - SPACE ATTACK
+- below - text and icon - PRESS [ENTER KEY ICON] TO START
+- ship and all hud elements are already present
+- player presses enter key, title disappears
+- formation appears with fade in
+- tutorial info text on screen: PRESS [SPACEBAR] TO ATTACK and under [LEFT/RIGHT ARROW KEYS ICON] TO MOVE
+- ship starts at center, player can move it left/right
+- when the player presses SPACEBAR, it shoots, tutorial info disappears and formation starts its movement, the game starts
+
+
+
+Feedback on enemy movement/attack
+
+- we need to slow things down, as the starting difficulty is very high
+- reduce the vertical step of the formation by 80%
+-- use the resulting step distance for the sideways step as well
+- reduce the movement speed of the attackers by 60%
+
+Feedback on texts style, especially the game's title and Game Over
+- more pixel art, it's not neo-retro Pixel as I've asked, it's just retro, but way too sharp
+- on the arrow keys icon, make the arrows a bit thicker
+
+Next step - Score
+
+- Score is displayed on the left side non playable bar, as follows:
+-- at the very top HIGHSCORE - this is where the top score will be saved and shown below the text
+-- below it, SCORE - below is the current score displayed in figure, starts at 0000000
+- enemies give points:
+-- A - 50
+-- B - 100
+-- C - 500
+ 
+
+Next - visual polish
+- make the player projectile more like a torpedo, comet - a bit thinker at the tip, with a trail
+- let's add background
+- entire corridor is the space
+-- use a 1 layer parallax, slowly moving vertically, as if the player's ship is advancing forward
+-- use faded stars at the bottom layer, rarely a distant planet
+-- use small particles, like asteroids, dust, for the top layer
+-- make the entire cosmos a neo-retro blueish space, to differentiate it clearly from the black side borders - don't forget the pixelation part
+
+
+Feedback about attackers
+- all good in terms of movement, but they;re not shooting their projectiles anymore.
+- As soon as they exit formation, 0.2 sec after they should start their shooting, according to the timers described previously
+
+
+
+lastly... we're almost done
+- each wave has to be shot down in 60 sec
+- there is a green bar, vertical, thick, almost the entire height of the screen, with an E at the bottom
+- the green bar decreases in time with each sec
+- last 10 sec it becomes red
+- when the bar/timer goes to 0, the player's ship impodes - same explosion animation, but with a green fire
+- this counts as a lost life
+Do this and we're done for the day
+
+oh, under the green bar, show WAVE # - shows the current wave the player has reached
+
+
+ok boss, thanks for the help, let's stop for now. GG
+Now, please give me a sharable link for the game, that others can access and play our amazing space schmup
+
